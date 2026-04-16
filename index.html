@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gaston Gallardo — Video Editor & Photographer</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f2f0eb;
+    --cream: #e8e4dc;
+    --accent: #c8ff00;
+    --gray: #2a2a2a;
+    --mid: #888;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease, width 0.2s ease, height 0.2s ease;
+  }
+  .cursor.big {
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: 1px solid var(--accent);
+  }
+
+  /* Nav */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 3rem;
+    mix-blend-mode: difference;
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.1em;
+    color: var(--white);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--white);
+    text-decoration: none;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+
+  .nav-links a:hover { opacity: 1; }
+
+  /* Hero */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse at 80% 20%, rgba(200,255,0,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse at 20% 80%, rgba(200,255,0,0.03) 0%, transparent 50%);
+  }
+
+  .hero-noise {
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 200px;
+  }
+
+  .hero-tag {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.3s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(5rem, 14vw, 14rem);
+    line-height: 0.88;
+    letter-spacing: -0.01em;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.5s forwards;
+  }
+
+  .hero-title span {
+    display: block;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+
+  .hero-desc {
+    max-width: 360px;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--mid);
+  }
+
+  .hero-scroll {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mid);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .hero-scroll::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--mid);
+  }
+
+  /* Showreel */
+  .showreel {
+    padding: 6rem 3rem;
+    position: relative;
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .video-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--gray);
+  }
+
+  .video-wrapper iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  /* Work */
+  .work {
+    padding: 4rem 3rem 8rem;
+  }
+
+  .work-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4rem;
+  }
+
+  .work-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 6vw, 6rem);
+    line-height: 1;
+  }
+
+  .work-count {
+    font-size: 0.75rem;
+    color: var(--mid);
+    letter-spacing: 0.1em;
+  }
+
+  .projects {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1.5rem;
+  }
+
+  .project {
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+    background: var(--gray);
+    cursor: none;
+  }
+
+  .project:nth-child(1) { grid-column: span 7; }
+  .project:nth-child(2) { grid-column: span 5; }
+  .project:nth-child(3) { grid-column: span 5; }
+  .project:nth-child(4) { grid-column: span 7; }
+
+  .project-thumb {
+    aspect-ratio: 16/10;
+    background: var(--gray);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-thumb-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.1em;
+    color: var(--mid);
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .project:hover .project-thumb-inner {
+    transform: scale(1.05);
+  }
+
+  .project-thumb iframe {
+    position: absolute;
+    inset: -5%;
+    width: 110%;
+    height: 110%;
+    border: none;
+    pointer-events: none;
+  }
+
+  .project-info {
+    padding: 1.5rem;
+  }
+
+  .project-client {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .project-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .project-type {
+    font-size: 0.8rem;
+    color: var(--mid);
+  }
+
+  .project-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--white);
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .project:hover .project-link { opacity: 1; }
+
+  .project-link::after {
+    content: '→';
+  }
+
+  .project-bts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.4rem;
+    padding: 0.4rem;
+    background: var(--black);
+  }
+
+  .project-bts img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease, filter 0.4s ease;
+    filter: brightness(0.9);
+    cursor: none;
+  }
+
+  .project-bts img:hover {
+    transform: scale(1.03);
+    filter: brightness(1);
+  }
+
+  .project-wide {
+    grid-column: span 12 !important;
+  }
+
+  /* About */
+  .about {
+    padding: 8rem 3rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+    border-top: 1px solid #1a1a1a;
+  }
+
+  .about-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 5vw, 5rem);
+    line-height: 0.95;
+    margin-bottom: 2rem;
+  }
+
+  .about-text {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--mid);
+    margin-bottom: 1.5rem;
+  }
+
+  .about-text strong {
+    color: var(--white);
+    font-weight: 400;
+  }
+
+  .services {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 2rem;
+  }
+
+  .service-tag {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid #333;
+    border-radius: 2px;
+    color: var(--mid);
+  }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .stat {
+    border-top: 1px solid #222;
+    padding-top: 1.5rem;
+  }
+
+  .stat-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--mid);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* Contact */
+  .contact {
+    padding: 8rem 3rem;
+    border-top: 1px solid #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .contact-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4rem, 10vw, 10rem);
+    line-height: 0.9;
+    margin-bottom: 2rem;
+  }
+
+  .contact-title span { color: var(--accent); }
+
+  .contact-sub {
+    font-size: 1rem;
+    color: var(--mid);
+    margin-bottom: 3rem;
+    max-width: 400px;
+    line-height: 1.7;
+  }
+
+  .contact-email {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    color: var(--white);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 0.2rem;
+    transition: color 0.2s;
+  }
+
+  .contact-email:hover { color: var(--accent); }
+
+  /* Footer */
+  footer {
+    padding: 2rem 3rem;
+    border-top: 1px solid #1a1a1a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  footer p {
+    font-size: 0.7rem;
+    color: #444;
+    letter-spacing: 0.1em;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .footer-links a {
+    font-size: 0.7rem;
+    color: #444;
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--white); }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    nav { padding: 1.5rem; }
+    .hero { padding: 1.5rem; }
+    .showreel, .work, .about, .contact { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .projects { grid-template-columns: 1fr; }
+    .project:nth-child(n) { grid-column: span 1; }
+    .about { grid-template-columns: 1fr; gap: 3rem; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+    body { cursor: auto; }
+    .cursor { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<nav>
+  <a href="#" class="nav-logo">Gaston Gallardo</a>
+  <ul class="nav-links">
+    <li><a href="#work">Work</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-noise"></div>
+  <p class="hero-tag">Based in Sydney, Australia</p>
+  <h1 class="hero-title">
+    Gaston<br>
+    <span>Gallardo</span>
+  </h1>
+  <div class="hero-sub">
+    <p class="hero-desc">Video editor & photographer crafting authentic visual stories for brands that matter.</p>
+    <p class="hero-scroll">Scroll to explore</p>
+  </div>
+</section>
+
+<!-- Showreel -->
+<section class="showreel" id="showreel">
+  <p class="section-label">Showreel 2025</p>
+  <div class="video-wrapper">
+    <iframe
+      src="https://www.youtube.com/embed/I5ZLyzwCymc?rel=0&modestbranding=1"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen>
+    </iframe>
+  </div>
+</section>
+
+<!-- Work -->
+<section class="work" id="work">
+  <div class="work-header">
+    <h2 class="work-title">Selected<br>Work</h2>
+    <span class="work-count">— 04 Projects</span>
+  </div>
+
+  <div class="projects">
+
+    <div class="project project-wide">
+      <div class="project-thumb">
+        <iframe
+          src="https://www.youtube.com/embed/XzlEmUQjHpw?rel=0&modestbranding=1&mute=1&autoplay=0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div class="project-bts">
+        <img src="DSC03528.jpg" alt="Permobil BTS - Clapperboard" loading="lazy">
+        <img src="DSC03533.jpg" alt="Permobil BTS - On set" loading="lazy">
+        <img src="DSC05593.jpg" alt="Permobil BTS - Kieran Watts" loading="lazy">
+      </div>
+      <div class="project-info">
+        <p class="project-client">Permobil × Little Frames</p>
+        <h3 class="project-name">Innovating for Individuals</h3>
+        <p class="project-type">Documentary Series — Video Production — BTS Photography</p>
+        <a href="https://youtu.be/XzlEmUQjHpw" target="_blank" class="project-link">View project</a>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-thumb">
+        <div class="project-thumb-inner">VOYAGER</div>
+      </div>
+      <div class="project-info">
+        <p class="project-client">Voyager Tennis</p>
+        <h3 class="project-name">Court & Pickleball</h3>
+        <p class="project-type">Photo & Video — Brand Content</p>
+        <a href="#" class="project-link">View project</a>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-thumb">
+        <iframe
+          src="https://www.youtube.com/embed/7Bknzps63fQ?rel=0&modestbranding=1&mute=1&autoplay=0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div class="project-info">
+        <p class="project-client">Muchacha Brewing Co.</p>
+        <h3 class="project-name">Brookie Fest — 7th Day Brewery</h3>
+        <p class="project-type">Brand Content — Event Coverage</p>
+        <a href="https://youtube.com/shorts/7Bknzps63fQ" target="_blank" class="project-link">View project</a>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-thumb">
+        <div class="project-thumb-inner" style="background: linear-gradient(135deg, #1a1a0a 0%, #2a2a10 100%); flex-direction: column; gap: 0.5rem;">
+          <span style="font-size: 2rem;">🌵</span>
+          <span>MUCHACHA WEB</span>
+        </div>
+      </div>
+      <div class="project-info">
+        <p class="project-client">Muchacha Brewing Co.</p>
+        <h3 class="project-name">Shopify Storefront</h3>
+        <p class="project-type">Web Design — E-commerce — Shopify</p>
+        <a href="https://muchachabrewingco.com/" target="_blank" class="project-link">View live site</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- About -->
+<section class="about" id="about">
+  <div class="about-left">
+    <h2 class="about-title">The person<br>behind the<br>lens.</h2>
+    <p class="about-text">I'm Gaston — a <strong>video editor and photographer</strong> based in Sydney, originally from Argentina. I run <strong>Bacon Creative</strong>, a small studio focused on brand storytelling through film and photography.</p>
+    <p class="about-text">I've worked with global brands like <strong>Permobil</strong>, sports venues like <strong>Voyager Tennis</strong>, and co-founded <strong>Muchacha Brewing Co.</strong> — an Argentine-inspired RTD brand. I bring creative direction and technical precision to every project.</p>
+    <div class="services">
+      <span class="service-tag">Video Editing</span>
+      <span class="service-tag">Photography</span>
+      <span class="service-tag">Drone (DJI)</span>
+      <span class="service-tag">Graphic Design</span>
+      <span class="service-tag">Brand Content</span>
+      <span class="service-tag">Social Media</span>
+    </div>
+  </div>
+  <div class="about-stats">
+    <div class="stat">
+      <p class="stat-number">5+</p>
+      <p class="stat-label">Years experience</p>
+    </div>
+    <div class="stat">
+      <p class="stat-number">SYD</p>
+      <p class="stat-label">Based in Sydney</p>
+    </div>
+    <div class="stat">
+      <p class="stat-number">A7RV</p>
+      <p class="stat-label">Sony + DJI setup</p>
+    </div>
+    <div class="stat">
+      <p class="stat-number">ARG</p>
+      <p class="stat-label">Argentine roots</p>
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section class="contact" id="contact">
+  <h2 class="contact-title">Let's<br><span>work</span><br>together.</h2>
+  <p class="contact-sub">Available for freelance projects in Sydney and remotely. Video production, photography, brand content.</p>
+  <a href="mailto:gaston@baconcreative.com.au" class="contact-email">gaston@baconcreative.com.au</a>
+</section>
+
+<footer>
+  <p>© 2025 Gaston Gallardo / Bacon Creative</p>
+  <div class="footer-links">
+    <a href="https://www.instagram.com" target="_blank">Instagram</a>
+    <a href="https://www.linkedin.com" target="_blank">LinkedIn</a>
+  </div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+  });
+  document.querySelectorAll('a, .project').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('big'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('big'));
+  });
+
+  // Scroll reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.project, .stat, .about-left').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
