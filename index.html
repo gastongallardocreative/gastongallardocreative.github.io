@@ -6,717 +6,506 @@
 <title>Gaston Gallardo — Video Editor & Photographer</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --black: #0a0a0a;
-    --white: #f2f0eb;
-    --cream: #e8e4dc;
-    --accent: #c8ff00;
-    --gray: #2a2a2a;
-    --mid: #888;
-  }
-
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--black);
-    color: var(--white);
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 300;
-    overflow-x: hidden;
-    cursor: none;
-  }
-
-  /* Custom cursor */
-  .cursor {
-    position: fixed;
-    width: 10px;
-    height: 10px;
-    background: var(--accent);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9999;
-    transform: translate(-50%, -50%);
-    transition: transform 0.1s ease, width 0.2s ease, height 0.2s ease;
-  }
-  .cursor.big {
-    width: 40px;
-    height: 40px;
-    background: transparent;
-    border: 1px solid var(--accent);
-  }
-
-  /* Nav */
-  nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 2rem 3rem;
-    mix-blend-mode: difference;
-  }
-
-  .nav-logo {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.4rem;
-    letter-spacing: 0.1em;
-    color: var(--white);
-    text-decoration: none;
-  }
-
-  .nav-links {
-    display: flex;
-    gap: 2.5rem;
-    list-style: none;
-  }
-
-  .nav-links a {
-    color: var(--white);
-    text-decoration: none;
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    opacity: 0.7;
-    transition: opacity 0.2s;
-  }
-
-  .nav-links a:hover { opacity: 1; }
-
-  /* Hero */
-  .hero {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 3rem;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero-bg {
-    position: absolute;
-    inset: 0;
-    background: 
-      radial-gradient(ellipse at 80% 20%, rgba(200,255,0,0.04) 0%, transparent 60%),
-      radial-gradient(ellipse at 20% 80%, rgba(200,255,0,0.03) 0%, transparent 50%);
-  }
-
-  .hero-noise {
-    position: absolute;
-    inset: 0;
-    opacity: 0.03;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-    background-size: 200px;
-  }
-
-  .hero-tag {
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 1.5rem;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.3s forwards;
-  }
-
-  .hero-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(5rem, 14vw, 14rem);
-    line-height: 0.88;
-    letter-spacing: -0.01em;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.5s forwards;
-  }
-
-  .hero-title span {
-    display: block;
-    color: var(--accent);
-  }
-
-  .hero-sub {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-top: 3rem;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.8s forwards;
-  }
-
-  .hero-desc {
-    max-width: 360px;
-    font-size: 0.95rem;
-    line-height: 1.7;
-    color: var(--mid);
-  }
-
-  .hero-scroll {
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--mid);
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .hero-scroll::before {
-    content: '';
-    display: block;
-    width: 40px;
-    height: 1px;
-    background: var(--mid);
-  }
-
-  /* Showreel */
-  .showreel {
-    padding: 6rem 3rem;
-    position: relative;
-  }
-
-  .section-label {
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 2rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .section-label::before {
-    content: '';
-    display: block;
-    width: 30px;
-    height: 1px;
-    background: var(--accent);
-  }
-
-  .video-wrapper {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16/9;
-    border-radius: 4px;
-    overflow: hidden;
-    background: var(--gray);
-  }
-
-  .video-wrapper iframe {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-  }
-
-  /* Work */
-  .work {
-    padding: 4rem 3rem 8rem;
-  }
-
-  .work-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 4rem;
-  }
-
-  .work-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(3rem, 6vw, 6rem);
-    line-height: 1;
-  }
-
-  .work-count {
-    font-size: 0.75rem;
-    color: var(--mid);
-    letter-spacing: 0.1em;
-  }
-
-  .projects {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 1.5rem;
-  }
-
-  .project {
-    position: relative;
-    overflow: hidden;
-    border-radius: 4px;
-    background: var(--gray);
-    cursor: none;
-  }
-
-  .project:nth-child(1) { grid-column: span 7; }
-  .project:nth-child(2) { grid-column: span 5; }
-  .project:nth-child(3) { grid-column: span 5; }
-  .project:nth-child(4) { grid-column: span 7; }
-
-  .project-thumb {
-    aspect-ratio: 16/10;
-    background: var(--gray);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .project-thumb-inner {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.2rem;
-    letter-spacing: 0.1em;
-    color: var(--mid);
-    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  }
-
-  .project:hover .project-thumb-inner {
-    transform: scale(1.05);
-  }
-
-  .project-thumb iframe {
-    position: absolute;
-    inset: -5%;
-    width: 110%;
-    height: 110%;
-    border: none;
-    pointer-events: none;
-  }
-
-  .project-info {
-    padding: 1.5rem;
-  }
-
-  .project-client {
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 0.5rem;
-  }
-
-  .project-name {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.6rem;
-    letter-spacing: 0.02em;
-    line-height: 1;
-    margin-bottom: 0.5rem;
-  }
-
-  .project-type {
-    font-size: 0.8rem;
-    color: var(--mid);
-  }
-
-  .project-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--white);
-    text-decoration: none;
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-
-  .project:hover .project-link { opacity: 1; }
-
-  .project-link::after {
-    content: '→';
-  }
-
-  .project-bts {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.4rem;
-    padding: 0.4rem;
-    background: var(--black);
-  }
-
-  .project-bts img {
-    width: 100%;
-    aspect-ratio: 4/3;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.4s ease, filter 0.4s ease;
-    filter: brightness(0.9);
-    cursor: none;
-  }
-
-  .project-bts img:hover {
-    transform: scale(1.03);
-    filter: brightness(1);
-  }
-
-  .project-wide {
-    grid-column: span 12 !important;
-  }
-
-  .project-thumb-link { position: relative; cursor: none; }
-
-  .thumb-link-overlay {
-    display: block;
-    position: absolute;
-    inset: 0;
-    text-decoration: none;
-  }
-
-  .play-btn {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 64px;
-    height: 64px;
-    background: rgba(0,0,0,0.7);
-    border: 2px solid var(--accent);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    color: var(--accent);
-    transition: background 0.2s, transform 0.2s;
-  }
-
-  .thumb-link-overlay:hover .play-btn {
-    background: var(--accent);
-    color: var(--black);
-    transform: translate(-50%, -50%) scale(1.1);
-  }
-
-  /* About */
-  .about {
-    padding: 8rem 3rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6rem;
-    align-items: center;
-    border-top: 1px solid #1a1a1a;
-  }
-
-  .about-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(3rem, 5vw, 5rem);
-    line-height: 0.95;
-    margin-bottom: 2rem;
-  }
-
-  .about-text {
-    font-size: 1rem;
-    line-height: 1.8;
-    color: var(--mid);
-    margin-bottom: 1.5rem;
-  }
-
-  .about-text strong {
-    color: var(--white);
-    font-weight: 400;
-  }
-
-  .services {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 2rem;
-  }
-
-  .service-tag {
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    padding: 0.4rem 0.9rem;
-    border: 1px solid #333;
-    border-radius: 2px;
-    color: var(--mid);
-  }
-
-  .about-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-  }
-
-  .stat {
-    border-top: 1px solid #222;
-    padding-top: 1.5rem;
-  }
-
-  .stat-number {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 3.5rem;
-    color: var(--accent);
-    line-height: 1;
-    margin-bottom: 0.3rem;
-  }
-
-  .stat-label {
-    font-size: 0.75rem;
-    color: var(--mid);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  /* Contact */
-  .contact {
-    padding: 8rem 3rem;
-    border-top: 1px solid #1a1a1a;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .contact-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(4rem, 10vw, 10rem);
-    line-height: 0.9;
-    margin-bottom: 2rem;
-  }
-
-  .contact-title span { color: var(--accent); }
-
-  .contact-sub {
-    font-size: 1rem;
-    color: var(--mid);
-    margin-bottom: 3rem;
-    max-width: 400px;
-    line-height: 1.7;
-  }
-
-  .contact-email {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(1.5rem, 3vw, 2.5rem);
-    color: var(--white);
-    text-decoration: none;
-    letter-spacing: 0.05em;
-    border-bottom: 2px solid var(--accent);
-    padding-bottom: 0.2rem;
-    transition: color 0.2s;
-  }
-
-  .contact-email:hover { color: var(--accent); }
-
-  /* Footer */
-  footer {
-    padding: 2rem 3rem;
-    border-top: 1px solid #1a1a1a;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  footer p {
-    font-size: 0.7rem;
-    color: #444;
-    letter-spacing: 0.1em;
-  }
-
-  .footer-links {
-    display: flex;
-    gap: 2rem;
-  }
-
-  .footer-links a {
-    font-size: 0.7rem;
-    color: #444;
-    text-decoration: none;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    transition: color 0.2s;
-  }
-
-  .footer-links a:hover { color: var(--white); }
-
-  /* Animations */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Responsive */
-  @media (max-width: 768px) {
-    nav { padding: 1.5rem; }
-    .hero { padding: 1.5rem; }
-    .showreel, .work, .about, .contact { padding-left: 1.5rem; padding-right: 1.5rem; }
-    .projects { grid-template-columns: 1fr; }
-    .project:nth-child(n) { grid-column: span 1; }
-    .about { grid-template-columns: 1fr; gap: 3rem; }
-    footer { flex-direction: column; gap: 1rem; text-align: center; }
-    body { cursor: auto; }
-    .cursor { display: none; }
+  :root { --black:#0a0a0a; --white:#f2f0eb; --accent:#c8ff00; --gray:#1a1a1a; --mid:#888; --border:#222; }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden;cursor:none;}
+  .cursor{position:fixed;width:10px;height:10px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width 0.2s,height 0.2s,background 0.2s;}
+  .cursor.big{width:40px;height:40px;background:transparent;border:1px solid var(--accent);}
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1.8rem 3rem;}
+  .nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.1em;color:var(--white);text-decoration:none;}
+  .nav-links{display:flex;gap:2.5rem;list-style:none;}
+  .nav-links a{color:var(--white);text-decoration:none;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;opacity:0.6;transition:opacity 0.2s;}
+  .nav-links a:hover{opacity:1;}
+  .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:3rem;position:relative;overflow:hidden;}
+  .hero-img{position:absolute;inset:0;background-image:url('hero.jpg');background-size:cover;background-position:center 30%;opacity:0.35;mix-blend-mode:luminosity;}
+  .hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,var(--black) 20%,transparent 70%);}
+  .hero-tag{position:relative;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:1.5rem;opacity:0;animation:fadeUp 0.8s 0.3s forwards;}
+  .hero-title{position:relative;font-family:'Bebas Neue',sans-serif;font-size:clamp(5rem,14vw,14rem);line-height:0.88;opacity:0;animation:fadeUp 0.8s 0.5s forwards;}
+  .hero-title span{color:var(--accent);}
+  .hero-sub{position:relative;display:flex;justify-content:space-between;align-items:flex-end;margin-top:3rem;opacity:0;animation:fadeUp 0.8s 0.8s forwards;}
+  .hero-desc{max-width:360px;font-size:0.95rem;line-height:1.7;color:var(--mid);}
+  .hero-scroll{font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--mid);display:flex;align-items:center;gap:1rem;}
+  .hero-scroll::before{content:'';display:block;width:40px;height:1px;background:var(--mid);}
+  .showreel{padding:6rem 3rem;}
+  .section-label{font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:2rem;display:flex;align-items:center;gap:1rem;}
+  .section-label::before{content:'';display:block;width:30px;height:1px;background:var(--accent);}
+  .video-wrapper{position:relative;width:100%;aspect-ratio:16/9;border-radius:4px;overflow:hidden;background:var(--gray);}
+  .video-wrapper iframe{position:absolute;inset:0;width:100%;height:100%;border:none;}
+  .section-header{padding:5rem 3rem 3rem;border-top:1px solid var(--border);}
+  .section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,6vw,6rem);line-height:1;}
+  .section-title span{color:var(--accent);}
+  .projects-grid{padding:0 3rem 5rem;display:grid;grid-template-columns:repeat(12,1fr);gap:1.2rem;}
+  .proj{position:relative;overflow:hidden;border-radius:4px;background:var(--gray);cursor:none;}
+  .proj-sm{grid-column:span 4;} .proj-md{grid-column:span 6;} .proj-lg{grid-column:span 8;} .proj-xl{grid-column:span 12;}
+  .proj-thumb{aspect-ratio:16/10;position:relative;overflow:hidden;}
+  .proj-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.6s ease,filter 0.3s;filter:brightness(0.85);}
+  .proj:hover .proj-thumb img{transform:scale(1.05);filter:brightness(1);}
+  .proj-thumb-yt{position:relative;aspect-ratio:16/10;overflow:hidden;background:#111;}
+  .proj-thumb-yt img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.6s ease,filter 0.3s;filter:brightness(0.7);}
+  .proj:hover .proj-thumb-yt img{transform:scale(1.05);filter:brightness(0.9);}
+  .proj-thumb-link{display:block;position:absolute;inset:0;text-decoration:none;}
+  .play-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:56px;height:56px;background:rgba(0,0,0,0.6);border:2px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--accent);transition:all 0.2s;pointer-events:none;}
+  .proj-thumb-link:hover .play-btn{background:var(--accent);color:var(--black);transform:translate(-50%,-50%) scale(1.1);}
+  .proj-info{padding:1.2rem 1.5rem 1.5rem;}
+  .proj-client{font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:0.4rem;}
+  .proj-name{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;line-height:1;margin-bottom:0.3rem;}
+  .proj-type{font-size:0.75rem;color:var(--mid);}
+  .proj-link{display:inline-flex;align-items:center;gap:0.4rem;margin-top:0.8rem;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--white);text-decoration:none;opacity:0;transition:opacity 0.2s;}
+  .proj:hover .proj-link{opacity:1;}
+  .proj-link::after{content:'→';}
+  .proj-link.visible{opacity:1;}
+  .proj-bts{display:grid;gap:0.3rem;}
+  .proj-bts img{width:100%;object-fit:cover;display:block;filter:brightness(0.85);transition:filter 0.3s;}
+  .proj-bts img:hover{filter:brightness(1);}
+  .branding-grid{padding:0 3rem 5rem;display:grid;grid-template-columns:repeat(2,1fr);gap:3rem;}
+  .brand-card{}
+  .brand-hero{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:4px;margin-bottom:1rem;}
+  .brand-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:0.4rem;margin-bottom:1rem;}
+  .brand-gallery img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:3px;}
+  .brand-name{font-family:'Bebas Neue',sans-serif;font-size:2rem;line-height:1;margin-bottom:0.3rem;}
+  .brand-desc{font-size:0.8rem;color:var(--mid);line-height:1.6;}
+  .brand-tag{display:inline-block;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;padding:0.3rem 0.7rem;border:1px solid var(--border);border-radius:2px;color:var(--mid);margin-top:0.8rem;margin-right:0.3rem;}
+  .flyers-grid{padding:0 3rem 5rem;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
+  .flyer-item img{width:100%;display:block;border-radius:3px;transition:transform 0.3s;}
+  .flyer-item:hover img{transform:scale(1.02);}
+  .about{padding:8rem 3rem;display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:center;border-top:1px solid var(--border);}
+  .about-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,5vw,5rem);line-height:0.95;margin-bottom:2rem;}
+  .about-text{font-size:0.95rem;line-height:1.8;color:var(--mid);margin-bottom:1.2rem;}
+  .about-text strong{color:var(--white);font-weight:400;}
+  .services{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:1.5rem;}
+  .service-tag{font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;padding:0.4rem 0.9rem;border:1px solid var(--border);border-radius:2px;color:var(--mid);}
+  .about-stats{display:grid;grid-template-columns:1fr 1fr;gap:2rem;}
+  .stat{border-top:1px solid var(--border);padding-top:1.5rem;}
+  .stat-number{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;color:var(--accent);line-height:1;margin-bottom:0.3rem;}
+  .stat-label{font-size:0.7rem;color:var(--mid);letter-spacing:0.1em;text-transform:uppercase;}
+  .contact{padding:8rem 3rem;border-top:1px solid var(--border);display:flex;flex-direction:column;align-items:center;text-align:center;}
+  .contact-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,10vw,10rem);line-height:0.9;margin-bottom:2rem;}
+  .contact-title span{color:var(--accent);}
+  .contact-sub{font-size:0.95rem;color:var(--mid);margin-bottom:3rem;max-width:400px;line-height:1.7;}
+  .contact-email{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.5rem,3vw,2.5rem);color:var(--white);text-decoration:none;letter-spacing:0.05em;border-bottom:2px solid var(--accent);padding-bottom:0.2rem;transition:color 0.2s;}
+  .contact-email:hover{color:var(--accent);}
+  footer{padding:2rem 3rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+  footer p{font-size:0.7rem;color:#444;letter-spacing:0.1em;}
+  .footer-links{display:flex;gap:2rem;}
+  .footer-links a{font-size:0.7rem;color:#444;text-decoration:none;letter-spacing:0.1em;text-transform:uppercase;transition:color 0.2s;}
+  .footer-links a:hover{color:var(--white);}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+  .reveal{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease;}
+  .reveal.visible{opacity:1;transform:translateY(0);}
+  @media(max-width:900px){
+    nav{padding:1.2rem 1.5rem;}
+    .hero,.showreel,.section-header,.projects-grid,.branding-grid,.flyers-grid,.about,.contact,footer{padding-left:1.5rem;padding-right:1.5rem;}
+    .projects-grid{grid-template-columns:1fr;}
+    .proj-sm,.proj-md,.proj-lg,.proj-xl{grid-column:span 1;}
+    .branding-grid{grid-template-columns:1fr;}
+    .flyers-grid{grid-template-columns:repeat(2,1fr);}
+    .about{grid-template-columns:1fr;gap:3rem;}
+    footer{flex-direction:column;gap:1rem;text-align:center;}
+    body{cursor:auto;}
+    .cursor{display:none;}
   }
 </style>
 </head>
 <body>
-
 <div class="cursor" id="cursor"></div>
 
 <nav>
-  <a href="#" class="nav-logo">Gaston Gallardo</a>
+  <a href="#" class="nav-logo">GG Creative</a>
   <ul class="nav-links">
-    <li><a href="#work">Work</a></li>
+    <li><a href="#video">Video</a></li>
+    <li><a href="#branding">Branding</a></li>
+    <li><a href="#flyers">Flyers</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
 </nav>
 
-<!-- Hero -->
+<!-- HERO -->
 <section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-noise"></div>
+  <div class="hero-img"></div>
+  <div class="hero-overlay"></div>
   <p class="hero-tag">Based in Sydney, Australia</p>
-  <h1 class="hero-title">
-    Gaston<br>
-    <span>Gallardo</span>
-  </h1>
+  <h1 class="hero-title">Gaston<br><span>Gallardo</span></h1>
   <div class="hero-sub">
     <p class="hero-desc">Video editor & photographer crafting authentic visual stories for brands that matter.</p>
     <p class="hero-scroll">Scroll to explore</p>
   </div>
 </section>
 
-<!-- Showreel -->
-<section class="showreel" id="showreel">
+<!-- SHOWREEL -->
+<section class="showreel">
   <p class="section-label">Showreel 2025</p>
-  <div class="video-wrapper">
-    <iframe
-      src="https://www.youtube.com/embed/I5ZLyzwCymc?rel=0&modestbranding=1"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowfullscreen>
-    </iframe>
+  <div class="video-wrapper reveal">
+    <iframe src="https://www.youtube.com/embed/I5ZLyzwCymc?rel=0&modestbranding=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>
   </div>
 </section>
 
-<!-- Work -->
-<section class="work" id="work">
-  <div class="work-header">
-    <h2 class="work-title">Selected<br>Work</h2>
-    <span class="work-count">— 04 Projects</span>
+<!-- VIDEO & PHOTOGRAPHY -->
+<section id="video">
+  <div class="section-header">
+    <h2 class="section-title">Video &<br><span>Photography</span></h2>
   </div>
+  <div class="projects-grid">
 
-  <div class="projects">
-
-    <div class="project project-wide">
-      <div class="project-thumb project-thumb-link">
-        <a href="https://youtu.be/XzlEmUQjHpw" target="_blank" class="thumb-link-overlay">
-          <img src="https://img.youtube.com/vi/XzlEmUQjHpw/maxresdefault.jpg" alt="Permobil Kieran BTS" style="width:100%;height:100%;object-fit:cover;display:block;">
+    <!-- Permobil -->
+    <div class="proj proj-xl reveal">
+      <div class="proj-thumb-yt">
+        <a href="https://youtu.be/XzlEmUQjHpw" target="_blank" class="proj-thumb-link">
+          <img src="https://img.youtube.com/vi/XzlEmUQjHpw/maxresdefault.jpg" alt="Permobil BTS">
           <div class="play-btn">▶</div>
         </a>
       </div>
-      <div class="project-bts">
-        <img src="DSC03528.jpg" alt="Permobil BTS - Clapperboard" loading="lazy">
-        <img src="DSC03533.jpg" alt="Permobil BTS - On set" loading="lazy">
-        <img src="DSC05593.jpg" alt="Permobil BTS - Kieran Watts" loading="lazy">
+      <div class="proj-bts" style="grid-template-columns:repeat(3,1fr);aspect-ratio:unset;">
+        <img src="DSC03528.jpg" alt="BTS Clapperboard" loading="lazy" style="aspect-ratio:4/3;">
+        <img src="DSC03533.jpg" alt="BTS On set" loading="lazy" style="aspect-ratio:4/3;">
+        <img src="DSC05593.jpg" alt="BTS Kieran" loading="lazy" style="aspect-ratio:4/3;">
       </div>
-      <div class="project-info">
-        <p class="project-client">Permobil × Little Frames</p>
-        <h3 class="project-name">Innovating for Individuals</h3>
-        <p class="project-type">Documentary Series — Video Production — BTS Photography</p>
-        <a href="https://youtu.be/XzlEmUQjHpw" target="_blank" class="project-link">View project</a>
-      </div>
-    </div>
-
-    <div class="project">
-      <div class="project-thumb">
-        <div class="project-thumb-inner">VOYAGER</div>
-      </div>
-      <div class="project-info">
-        <p class="project-client">Voyager Tennis</p>
-        <h3 class="project-name">Court & Pickleball</h3>
-        <p class="project-type">Photo & Video — Brand Content</p>
-        <a href="#" class="project-link">View project</a>
+      <div class="proj-info">
+        <p class="proj-client">Permobil × Little Frames</p>
+        <h3 class="proj-name">Innovating for Individuals</h3>
+        <p class="proj-type">Documentary Series — Video Production — BTS Photography</p>
+        <a href="https://youtu.be/XzlEmUQjHpw" target="_blank" class="proj-link">View project</a>
       </div>
     </div>
 
-    <div class="project">
-      <div class="project-thumb project-thumb-link">
-        <a href="https://youtube.com/shorts/7Bknzps63fQ" target="_blank" class="thumb-link-overlay">
-          <img src="https://img.youtube.com/vi/7Bknzps63fQ/maxresdefault.jpg" alt="7th Day Brookie Fest Muchacha" style="width:100%;height:100%;object-fit:cover;display:block;">
+    <!-- Voyager Tennis -->
+    <div class="proj proj-lg reveal">
+      <div class="proj-thumb"><img src="voyager-2.jpg" alt="Voyager Tennis" loading="lazy"></div>
+      <div class="proj-bts" style="grid-template-columns:repeat(4,1fr);">
+        <img src="voyager-1.jpg" loading="lazy" style="aspect-ratio:4/3;">
+        <img src="voyager-3.jpg" loading="lazy" style="aspect-ratio:4/3;">
+        <img src="voyager-4.jpg" loading="lazy" style="aspect-ratio:4/3;">
+        <img src="voyager-5.jpg" loading="lazy" style="aspect-ratio:4/3;">
+      </div>
+      <div class="proj-info">
+        <p class="proj-client">Voyager Tennis</p>
+        <h3 class="proj-name">Court & Pickleball</h3>
+        <p class="proj-type">Photography — Drone — Brand Content</p>
+        <a href="https://www.instagram.com/reel/DVAZk_3EtTR/" target="_blank" class="proj-link">View on Instagram</a>
+      </div>
+    </div>
+
+    <!-- QStation -->
+    <div class="proj proj-md reveal">
+      <div class="proj-thumb"><img src="qstation-2.jpg" alt="QStation" loading="lazy"></div>
+      <div class="proj-bts" style="grid-template-columns:repeat(3,1fr);">
+        <img src="qstation-1.jpg" loading="lazy" style="aspect-ratio:4/3;">
+        <img src="qstation-3.jpg" loading="lazy" style="aspect-ratio:4/3;">
+        <img src="qstation-4.jpg" loading="lazy" style="aspect-ratio:4/3;">
+      </div>
+      <div class="proj-info">
+        <p class="proj-client">QStation</p>
+        <h3 class="proj-name">Sunset Sessions</h3>
+        <p class="proj-type">Event Photography — Brand Content</p>
+        <a href="https://www.instagram.com/reel/DQ8TgkAjwnf/" target="_blank" class="proj-link">View on Instagram</a>
+      </div>
+    </div>
+
+    <!-- Franui -->
+    <div class="proj proj-md reveal">
+      <div class="proj-thumb-yt">
+        <a href="https://youtube.com/shorts/6rmkGpg5uQs" target="_blank" class="proj-thumb-link">
+          <img src="franui-1.jpg" alt="Franui" loading="lazy">
           <div class="play-btn">▶</div>
         </a>
       </div>
-      <div class="project-info">
-        <p class="project-client">Muchacha Brewing Co.</p>
-        <h3 class="project-name">Brookie Fest — 7th Day Brewery</h3>
-        <p class="project-type">Brand Content — Event Coverage</p>
-        <a href="https://youtube.com/shorts/7Bknzps63fQ" target="_blank" class="project-link">View project</a>
+      <div class="proj-bts" style="grid-template-columns:repeat(3,1fr);">
+        <img src="franui-2.jpg" loading="lazy" style="aspect-ratio:4/3;">
+        <img src="franui-3.jpg" loading="lazy" style="aspect-ratio:4/3;">
+        <img src="franui-4.jpg" loading="lazy" style="aspect-ratio:4/3;">
+      </div>
+      <div class="proj-info">
+        <p class="proj-client">Franui ft Tuff Nutterz</p>
+        <h3 class="proj-name">Event Coverage</h3>
+        <p class="proj-type">Video — Event Photography</p>
+        <a href="https://youtube.com/shorts/6rmkGpg5uQs" target="_blank" class="proj-link">Watch</a>
       </div>
     </div>
 
-    <div class="project">
-      <div class="project-thumb">
-        <div class="project-thumb-inner" style="background: linear-gradient(135deg, #1a1a0a 0%, #2a2a10 100%); flex-direction: column; gap: 0.5rem;">
-          <span style="font-size: 2rem;">🌵</span>
-          <span>MUCHACHA WEB</span>
+    <!-- Muchacha Brookie Fest -->
+    <div class="proj proj-sm reveal">
+      <div class="proj-thumb-yt">
+        <a href="https://youtube.com/shorts/7Bknzps63fQ" target="_blank" class="proj-thumb-link">
+          <img src="https://img.youtube.com/vi/7Bknzps63fQ/maxresdefault.jpg" alt="Brookie Fest" loading="lazy">
+          <div class="play-btn">▶</div>
+        </a>
+      </div>
+      <div class="proj-info">
+        <p class="proj-client">Muchacha Brewing Co.</p>
+        <h3 class="proj-name">Brookie Fest</h3>
+        <p class="proj-type">Brand Content — Event</p>
+        <a href="https://youtube.com/shorts/7Bknzps63fQ" target="_blank" class="proj-link">Watch</a>
+      </div>
+    </div>
+
+    <!-- AFW -->
+    <div class="proj proj-sm reveal">
+      <div class="proj-thumb-yt">
+        <a href="https://youtube.com/shorts/E-q7K0T0vwc" target="_blank" class="proj-thumb-link">
+          <img src="https://img.youtube.com/vi/E-q7K0T0vwc/maxresdefault.jpg" alt="AFW" loading="lazy">
+          <div class="play-btn">▶</div>
+        </a>
+      </div>
+      <div class="proj-info">
+        <p class="proj-client">Muchacha × 7th Day</p>
+        <h3 class="proj-name">Australian Fashion Week</h3>
+        <p class="proj-type">Brand Content</p>
+        <a href="https://youtube.com/shorts/E-q7K0T0vwc" target="_blank" class="proj-link">Watch</a>
+      </div>
+    </div>
+
+    <!-- A Good Day Out -->
+    <div class="proj proj-sm reveal">
+      <div class="proj-thumb-yt">
+        <a href="https://www.instagram.com/reel/C6-GySYPpyc/" target="_blank" class="proj-thumb-link">
+          <img src="qstation-3.jpg" alt="A Good Day Out" loading="lazy">
+          <div class="play-btn">▶</div>
+        </a>
+      </div>
+      <div class="proj-info">
+        <p class="proj-client">Muchacha Brewing Co.</p>
+        <h3 class="proj-name">A Good Day Out</h3>
+        <p class="proj-type">Brand Content — 7th Day Brewery</p>
+        <a href="https://www.instagram.com/reel/C6-GySYPpyc/" target="_blank" class="proj-link">Watch</a>
+      </div>
+    </div>
+
+    <!-- Piera Ceresa -->
+    <div class="proj proj-lg reveal">
+      <div class="proj-thumb-yt">
+        <a href="https://youtube.com/shorts/iakgNC64-oY" target="_blank" class="proj-thumb-link">
+          <img src="https://img.youtube.com/vi/iakgNC64-oY/maxresdefault.jpg" alt="Piera Ceresa" loading="lazy">
+          <div class="play-btn">▶</div>
+        </a>
+      </div>
+      <div class="proj-info">
+        <p class="proj-client">Piera Ceresa</p>
+        <h3 class="proj-name">Content Reels</h3>
+        <p class="proj-type">Video Production — Social Content</p>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.8rem;">
+          <a href="https://youtube.com/shorts/9LJu3UJ4Ww0" target="_blank" class="proj-link visible">Reel 2</a>
+          <a href="https://youtube.com/shorts/Rf5ppCufkP0" target="_blank" class="proj-link visible">Reel 3</a>
+          <a href="https://youtube.com/shorts/iHAOrUsT9R8" target="_blank" class="proj-link visible">Reel 4</a>
+          <a href="https://youtube.com/shorts/6hz_Ryi36i0" target="_blank" class="proj-link visible">Reel 5</a>
         </div>
       </div>
-      <div class="project-info">
-        <p class="project-client">Muchacha Brewing Co.</p>
-        <h3 class="project-name">Shopify Storefront</h3>
-        <p class="project-type">Web Design — E-commerce — Shopify</p>
-        <a href="https://muchachabrewingco.com/" target="_blank" class="project-link">View live site</a>
+    </div>
+
+    <!-- Santiago Motorizado -->
+    <div class="proj proj-md reveal">
+      <div class="proj-thumb-yt">
+        <a href="https://youtube.com/shorts/f2I8uV2H_fM" target="_blank" class="proj-thumb-link">
+          <img src="motorizado-syd.jpg" alt="Santiago Motorizado" loading="lazy">
+          <div class="play-btn">▶</div>
+        </a>
+      </div>
+      <div class="proj-info">
+        <p class="proj-client">Diaspora Entertainment</p>
+        <h3 class="proj-name">Santiago Motorizado — Australian Tour</h3>
+        <p class="proj-type">Tour Promo — Interview — Event Coverage</p>
+        <a href="https://youtube.com/shorts/tyrpA-oD62o" target="_blank" class="proj-link">Watch Interview</a>
+      </div>
+    </div>
+
+    <!-- Francisca y los Exploradores -->
+    <div class="proj proj-md reveal">
+      <div class="proj-thumb-yt">
+        <a href="https://youtube.com/shorts/GmzEzmBpUsw" target="_blank" class="proj-thumb-link">
+          <img src="https://img.youtube.com/vi/GmzEzmBpUsw/maxresdefault.jpg" alt="Francisca" loading="lazy">
+          <div class="play-btn">▶</div>
+        </a>
+      </div>
+      <div class="proj-info">
+        <p class="proj-client">Diaspora Entertainment</p>
+        <h3 class="proj-name">Francisca y los Exploradores</h3>
+        <p class="proj-type">Live Event — Video & Photography</p>
+        <a href="https://youtube.com/shorts/ry8TYDpaSuA" target="_blank" class="proj-link">View Reel 2</a>
+      </div>
+    </div>
+
+    <!-- Diaspora Reels -->
+    <div class="proj proj-md reveal">
+      <div class="proj-thumb-yt">
+        <a href="https://youtube.com/shorts/tgcY7FscDNc" target="_blank" class="proj-thumb-link">
+          <img src="diaspora-venue.jpg" alt="Diaspora Events" loading="lazy">
+          <div class="play-btn">▶</div>
+        </a>
+      </div>
+      <div class="proj-info">
+        <p class="proj-client">Diaspora Entertainment</p>
+        <h3 class="proj-name">Event Reels</h3>
+        <p class="proj-type">Live Music — Event Coverage</p>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.8rem;">
+          <a href="https://youtube.com/shorts/OoKJ7wqgaYY" target="_blank" class="proj-link visible">Reel 2</a>
+          <a href="https://youtube.com/shorts/XhwgCuNYya8" target="_blank" class="proj-link visible">Reel 3</a>
+          <a href="https://youtube.com/shorts/ucIVOrV0fwg" target="_blank" class="proj-link visible">Reel 4</a>
+          <a href="https://youtube.com/shorts/1KEGqiBApKA" target="_blank" class="proj-link visible">Reel 5</a>
+          <a href="https://youtube.com/shorts/a2xdeIcfshY" target="_blank" class="proj-link visible">Reel 6</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Karaka -->
+    <div class="proj proj-sm reveal">
+      <div class="proj-thumb-yt">
+        <a href="https://youtube.com/shorts/OcYRRQP38oE" target="_blank" class="proj-thumb-link">
+          <img src="https://img.youtube.com/vi/OcYRRQP38oE/maxresdefault.jpg" alt="Karaka" loading="lazy">
+          <div class="play-btn">▶</div>
+        </a>
+      </div>
+      <div class="proj-info">
+        <p class="proj-client">Karaka</p>
+        <h3 class="proj-name">Brand Reel</h3>
+        <p class="proj-type">Video Production</p>
+        <a href="https://youtube.com/shorts/OcYRRQP38oE" target="_blank" class="proj-link">Watch</a>
+      </div>
+    </div>
+
+    <!-- Muchacha Web -->
+    <div class="proj proj-sm reveal">
+      <div class="proj-thumb"><img src="voyager-6.jpg" alt="Muchacha Web" loading="lazy"></div>
+      <div class="proj-info">
+        <p class="proj-client">Muchacha Brewing Co.</p>
+        <h3 class="proj-name">Shopify Storefront</h3>
+        <p class="proj-type">Web Design — E-commerce — Shopify</p>
+        <a href="https://muchachabrewingco.com" target="_blank" class="proj-link">Visit site</a>
       </div>
     </div>
 
   </div>
 </section>
 
-<!-- About -->
+<!-- BRANDING -->
+<section id="branding">
+  <div class="section-header">
+    <h2 class="section-title">Brand<br><span>Identity</span></h2>
+  </div>
+  <div class="branding-grid">
+
+    <div class="brand-card reveal">
+      <img src="diaspora-yellow.png" alt="Diaspora" class="brand-hero" style="object-fit:contain;background:#f0e000;padding:2rem;">
+      <div class="brand-gallery">
+        <img src="motorizado-byr.jpg" alt="Byron Bay">
+        <img src="motorizado-melb.jpg" alt="Melbourne">
+        <img src="motorizado-syd.jpg" alt="Sydney">
+      </div>
+      <div class="brand-info">
+        <h3 class="brand-name">Diaspora Entertainment</h3>
+        <p class="brand-desc">Brand identity for an Argentine-Australian events company. Logo, mascot, color system, and event collateral for Latin music tours across Australia.</p>
+        <span class="brand-tag">Logo Design</span><span class="brand-tag">Event Flyers</span><span class="brand-tag">Brand System</span>
+      </div>
+    </div>
+
+    <div class="brand-card reveal">
+      <img src="maiks-poster.jpg" alt="Maiks" class="brand-hero">
+      <div class="brand-gallery">
+        <img src="maiks-menu-food.jpg" alt="Maiks Menu">
+        <img src="maiks-can.jpg" alt="Maiks Can">
+        <img src="maiks-tshirt.jpg" alt="Maiks Tshirt">
+      </div>
+      <div class="brand-info">
+        <h3 class="brand-name">Maiks</h3>
+        <p class="brand-desc">Full brand identity for a specialty coffee and brunch café in Barcelona. Retro mascot, menus, merchandise, social content, and can packaging.</p>
+        <span class="brand-tag">Logo & Mascot</span><span class="brand-tag">Menu Design</span><span class="brand-tag">Merchandise</span><span class="brand-tag">Packaging</span>
+      </div>
+    </div>
+
+    <div class="brand-card reveal">
+      <img src="interlock-hero.png" alt="Interlock" class="brand-hero">
+      <div class="brand-gallery">
+        <img src="interlock-mockup.jpg" alt="Interlock Stationery" style="object-fit:cover;">
+        <img src="interlock-mockup.jpg" alt="Interlock" style="object-fit:cover;object-position:right;">
+        <img src="interlock-hero.png" alt="Interlock" style="object-fit:cover;">
+      </div>
+      <div class="brand-info">
+        <h3 class="brand-name">Interlock</h3>
+        <p class="brand-desc">Minimal brand identity for a construction and architecture social enterprise. Logo, pattern system, stationery, and business cards.</p>
+        <span class="brand-tag">Logo Design</span><span class="brand-tag">Stationery</span><span class="brand-tag">Brand System</span>
+      </div>
+    </div>
+
+    <div class="brand-card reveal">
+      <img src="ag-hero.jpg" alt="AG Building" class="brand-hero">
+      <div class="brand-gallery">
+        <img src="ag-logo.png" alt="AG Logo" style="object-fit:contain;background:#000;padding:1rem;">
+        <img src="ag-card.png" alt="AG Card" style="object-fit:cover;">
+        <img src="ag-hero.jpg" alt="AG" style="object-fit:cover;">
+      </div>
+      <div class="brand-info">
+        <h3 class="brand-name">AG Building Design</h3>
+        <p class="brand-desc">Sophisticated brand identity for an architectural project management firm in Sydney. Logo, business cards, and brand collateral.</p>
+        <span class="brand-tag">Logo Design</span><span class="brand-tag">Business Cards</span><span class="brand-tag">Brand Identity</span>
+      </div>
+    </div>
+
+    <div class="brand-card reveal">
+      <img src="bacon-website.png" alt="Bacon Creative" class="brand-hero">
+      <div class="brand-gallery">
+        <img src="bacon-logo.png" alt="Bacon Logo" style="object-fit:contain;background:#fff;padding:1.5rem;">
+        <img src="surfin.png" alt="Bacon" style="object-fit:cover;">
+        <img src="bacon-website.png" alt="Bacon Web" style="object-fit:cover;">
+      </div>
+      <div class="brand-info">
+        <h3 class="brand-name">Bacon Creative Studio</h3>
+        <p class="brand-desc">Own agency brand — logo, website, and visual identity. Creative studio offering video, photography, design, and web services in Sydney.</p>
+        <span class="brand-tag">Logo Design</span><span class="brand-tag">Web Design</span><span class="brand-tag">Brand Identity</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FLYERS & PACKAGING -->
+<section id="flyers">
+  <div class="section-header">
+    <h2 class="section-title">Flyers &<br><span>Packaging</span></h2>
+  </div>
+  <div class="flyers-grid">
+    <div class="flyer-item reveal"><img src="motorizado-byr.jpg" alt="Motorizado Byron Bay" loading="lazy"></div>
+    <div class="flyer-item reveal"><img src="motorizado-melb.jpg" alt="Motorizado Melbourne" loading="lazy"></div>
+    <div class="flyer-item reveal"><img src="motorizado-syd.jpg" alt="Motorizado Sydney" loading="lazy"></div>
+    <div class="flyer-item reveal"><img src="diaspora-far.jpg" alt="Diaspora" loading="lazy"></div>
+    <div class="flyer-item reveal"><img src="maiks-menu-food.jpg" alt="Maiks Food" loading="lazy"></div>
+    <div class="flyer-item reveal"><img src="maiks-menu-cafe.jpg" alt="Maiks Cafe" loading="lazy"></div>
+    <div class="flyer-item reveal"><img src="slowmonday.jpg" alt="Slow Monday" loading="lazy"></div>
+    <div class="flyer-item reveal"><img src="maiks-can.jpg" alt="Maiks Can" loading="lazy"></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
 <section class="about" id="about">
-  <div class="about-left">
-    <h2 class="about-title">The person<br>behind the<br>lens.</h2>
-    <p class="about-text">I'm Gaston — a <strong>video editor and photographer</strong> based in Sydney, originally from Argentina. I run <strong>Bacon Creative</strong>, a small studio focused on brand storytelling through film and photography.</p>
-    <p class="about-text">I've worked with global brands like <strong>Permobil</strong>, sports venues like <strong>Voyager Tennis</strong>, and co-founded <strong>Muchacha Brewing Co.</strong> — an Aussie-made margarita RTD and agave spirit brand. I bring creative direction and technical precision to every project.</p>
-    <div class="services">
+  <div>
+    <h2 class="about-title reveal">The person<br>behind the<br>lens.</h2>
+    <p class="about-text reveal">I'm Gaston — a <strong>video editor and photographer</strong> based in Sydney, originally from Argentina. I run <strong>Bacon Creative</strong>, a small studio focused on brand storytelling through film and photography.</p>
+    <p class="about-text reveal">I've worked with global brands like <strong>Permobil</strong>, sports venues like <strong>Voyager Tennis</strong>, events companies like <strong>Diaspora Entertainment</strong>, and co-founded <strong>Muchacha Brewing Co.</strong> — an Aussie-made margarita RTD and agave spirit brand.</p>
+    <div class="services reveal">
       <span class="service-tag">Video Editing</span>
       <span class="service-tag">Photography</span>
       <span class="service-tag">Drone (DJI)</span>
       <span class="service-tag">Graphic Design</span>
-      <span class="service-tag">Brand Content</span>
-      <span class="service-tag">Social Media</span>
+      <span class="service-tag">Brand Identity</span>
+      <span class="service-tag">Web Design</span>
+      <span class="service-tag">Social Content</span>
     </div>
   </div>
   <div class="about-stats">
-    <div class="stat">
-      <p class="stat-number">5+</p>
-      <p class="stat-label">Years experience</p>
-    </div>
-    <div class="stat">
-      <p class="stat-number">SYD</p>
-      <p class="stat-label">Based in Sydney</p>
-    </div>
-    <div class="stat">
-      <p class="stat-number">A7RV</p>
-      <p class="stat-label">Sony + DJI setup</p>
-    </div>
-    <div class="stat">
-      <p class="stat-number">ARG</p>
-      <p class="stat-label">Argentine roots</p>
-    </div>
+    <div class="stat reveal"><p class="stat-number">5+</p><p class="stat-label">Years experience</p></div>
+    <div class="stat reveal"><p class="stat-number">SYD</p><p class="stat-label">Based in Sydney</p></div>
+    <div class="stat reveal"><p class="stat-number">A7RV</p><p class="stat-label">Sony + DJI setup</p></div>
+    <div class="stat reveal"><p class="stat-number">ARG</p><p class="stat-label">Argentine roots</p></div>
   </div>
 </section>
 
-<!-- Contact -->
+<!-- CONTACT -->
 <section class="contact" id="contact">
-  <h2 class="contact-title">Let's<br><span>work</span><br>together.</h2>
-  <p class="contact-sub">Available for freelance projects in Sydney and remotely. Video production, photography, brand content.</p>
-  <a href="mailto:gaston@baconcreative.com.au" class="contact-email">gaston@baconcreative.com.au</a>
+  <h2 class="contact-title reveal">Let's<br><span>work</span><br>together.</h2>
+  <p class="contact-sub reveal">Available for freelance projects in Sydney and remotely. Video production, photography, brand content, web design.</p>
+  <a href="mailto:gaston@baconcreative.com.au" class="contact-email reveal">gaston@baconcreative.com.au</a>
 </section>
 
 <footer>
-  <p>© 2025 Gaston Gallardo / Bacon Creative</p>
+  <p>© 2025 Gaston Gallardo / GG Creative</p>
   <div class="footer-links">
     <a href="https://www.instagram.com" target="_blank">Instagram</a>
     <a href="https://www.linkedin.com" target="_blank">LinkedIn</a>
@@ -724,33 +513,16 @@
 </footer>
 
 <script>
-  // Custom cursor
   const cursor = document.getElementById('cursor');
-  document.addEventListener('mousemove', e => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
-  });
-  document.querySelectorAll('a, .project').forEach(el => {
+  document.addEventListener('mousemove', e => { cursor.style.left = e.clientX+'px'; cursor.style.top = e.clientY+'px'; });
+  document.querySelectorAll('a,.proj,.brand-card,.flyer-item').forEach(el => {
     el.addEventListener('mouseenter', () => cursor.classList.add('big'));
     el.addEventListener('mouseleave', () => cursor.classList.remove('big'));
   });
-
-  // Scroll reveal
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.style.opacity = '1';
-        entry.target.style.transform = 'translateY(0)';
-      }
-    });
-  }, { threshold: 0.1 });
-
-  document.querySelectorAll('.project, .stat, .about-left').forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(20px)';
-    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-    observer.observe(el);
-  });
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 </script>
 </body>
 </html>
